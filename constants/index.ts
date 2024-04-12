@@ -1,4 +1,6 @@
 import {
+  BookImage,
+  CalendarDays,
   Contact,
   Gift,
   Image,
@@ -6,6 +8,7 @@ import {
   LayoutDashboard,
   ShoppingBag,
   ShoppingBasket,
+  Store,
   UsersRound,
 } from "lucide-react";
 
@@ -59,6 +62,11 @@ export const sidebarLinks = [
     icon: LayoutDashboard,
   },
   {
+    name: "Stores",
+    path: "/admin/stores",
+    icon: Store,
+  },
+  {
     name: "Users",
     path: "/admin/users",
     icon: UsersRound,
@@ -84,8 +92,18 @@ export const sidebarLinks = [
     icon: Image,
   },
   {
-    name: "Coupouns",
-    path: "/admin/coupouns",
+    name: "Coupons",
+    path: "/admin/coupons",
     icon: Gift,
+  },
+  {
+    name: "Blogs",
+    path: "/admin/blogs",
+    icon: BookImage,
+  },
+  {
+    name: "Events",
+    path: "/admin/events",
+    icon: CalendarDays,
   },
 ];

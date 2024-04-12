@@ -10,6 +10,12 @@ const MobileSidebar = () => {
   const pathname = usePathname();
   const { open, onClose } = useSidebarStore();
 
+  const handleClose = () => {
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
+
   return (
     <div
       className={`fixed inset-0 h-screen  transition duration-300 shadow bg-black/30 z-50 ${
@@ -23,13 +29,14 @@ const MobileSidebar = () => {
             <X size={18} onClick={onClose} />
           </button>
         </div>
-        <div className="flex flex-col gap-2 mt-6 px-4">
+        <div className="flex flex-col gap-2 mt-4 px-4 overflow-y-auto scroll">
           {sidebarLinks.map((link, index) => (
             <Link
+              onClick={handleClose}
               href={link.path}
               key={index}
-              className={`flex items-center gap-2 hover:bg-primary-foreground transition duration-300 h-11 px-2 rounded ${
-                pathname === link.path ? "bg-primary-foreground" : ""
+              className={`flex items-center gap-2 hover:bg-primary/60 transition duration-300 h-11 px-2 rounded ${
+                pathname === link.path ? "bg-primary/60" : ""
               }`}
             >
               <link.icon size={20} />

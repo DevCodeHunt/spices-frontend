@@ -13,13 +13,13 @@ const DesktopSidebar = () => {
       <div className="h-14 border-b border-b-gray-100 flex items-center px-4">
         <Logo path="/admin" />
       </div>
-      <div className="flex flex-col gap-2 mt-6 px-4">
+      <div className="flex flex-col gap-2 mt-4 px-4 overflow-y-auto scroll">
         {sidebarLinks.map((link, index) => (
           <Link
             href={link.path}
             key={index}
-            className={`flex items-center gap-2 hover:bg-primary-foreground transition duration-300 h-11 px-2 rounded ${
-              pathname === link.path ? "bg-primary-foreground" : ""
+            className={`flex items-center gap-2 hover:bg-primary/60 transition duration-300 h-11 px-2 rounded ${
+              pathname === link.path ? "bg-primary/60" : ""
             }`}
           >
             <link.icon size={20} />

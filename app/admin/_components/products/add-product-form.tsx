@@ -40,13 +40,11 @@ const AddProductForm = () => {
     console.log(editorContent);
   };
 
-
-
   useEffect(() => {
     const initializeEditor = async () => {
-      const editor  = new EditorJS({
+      const editor = new EditorJS({
         holder: "textEditor",
-        placeholder: "Start typing here...",
+        placeholder: "Write your product description...",
         tools: tools,
         onReady: () => {
           editorRef.current = editor;
@@ -54,11 +52,9 @@ const AddProductForm = () => {
         onChange: async () => {
           const editorContent = await editor.saver.save();
           setEditorContent(editorContent.blocks);
-          
         },
       });
-      
-    }
+    };
 
     initializeEditor();
 
@@ -67,18 +63,18 @@ const AddProductForm = () => {
         editorRef.current &&
         typeof editorRef.current.destroy === "function"
       ) {
-        editorRef.current?.destroy();
+        editorRef.current.destroy();
         editorRef.current = null;
       }
     };
   }, []);
 
-  
-
   return (
     <div className="mt-10">
-      <Button onClick={form.handleSubmit(onSubmit)}>Add Product</Button>
-      <div className="flex lg:flex-row flex-col gap-4">
+      <div className="flex items-center justify-end">
+        <Button onClick={form.handleSubmit(onSubmit)}>Add Product</Button>
+      </div>
+      <div className="flex lg:flex-row flex-col gap-4 mt-6">
         <div className="bg-white shadow rounded p-4 lg:w-[450px] w-full">
           <UploadProductImage
             images={images}
@@ -166,7 +162,7 @@ const AddProductForm = () => {
         <h3 className="text-lg font-semibold text-gray-800">
           Product Description
         </h3>
-        <div id="textEditor"></div>
+        <div id="textEditor" className="mt-4"></div>
       </div>
     </div>
   );
