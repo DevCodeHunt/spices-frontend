@@ -8,5 +8,17 @@ export const addProductFormSchema = z.object({
   //   .min(1, { message: "Product category is required" })
   //   .trim(),
   discountPrice: z.string().trim(),
-  stock: z.string().min(1, { message: "Product stock is required"}).trim(),
+  stock: z.string().min(1, { message: "Product stock is required" }).trim(),
 });
+
+export const addBannerFormSchema = z.object({
+  title: z.string().min(1, { message: "Banner title is required" }).trim(),
+  description: z.string().min(1, { message: "Banner description is required" }).trim(),
+  link: z.string().trim(),
+});
+
+export const editBannerFormSchema = z.object({
+  title: z.string().min(1, { message: "Banner title is required" }).trim(),
+  description: z.string().min(1, { message: "Banner description is required" }).trim(),
+  link: z.string().trim(),
+})

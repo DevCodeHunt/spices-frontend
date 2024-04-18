@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { navItems } from "@/constants";
 import { X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback } from "react";
 
 const MenuDrawer = ({
@@ -12,6 +13,7 @@ const MenuDrawer = ({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
 
   const handleClose = useCallback(() => {
     setTimeout(() => setOpen(false), 200);
@@ -24,19 +26,41 @@ const MenuDrawer = ({
           <X size={20} />
         </button>
 
-        <div className="flex  flex-col gap-4 container h-full mt-16">
+        <div className="flex  flex-col gap-4 container mt-16">
           {navItems.map((item, index) => (
             <Link
               key={index}
               onClick={handleClose}
               href={item.path}
-              className={`uppercase font-medium text-sm ${
+              className={`uppercase font-medium ${
                 pathname === item.name ? "text-primary" : ""
               }`}
             >
               {item.name}
             </Link>
           ))}
+        </div>
+
+        <div className="flex items-center gap-2 px-4 mt-8">
+          <Button
+            onClick={() => {
+              router.push("/signin");
+              handleClose();
+            }}
+            className="w-full"
+          >
+            Login
+          </Button>
+          <Button
+            onClick={() => {
+              router.push("/signup");
+              handleClose();
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            Register
+          </Button>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Toaster as SoonerToaster } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
+import QueryProvider from "@/providers/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <QueryProvider>{children}</QueryProvider>
         <SoonerToaster />
         <Toaster />
       </body>

@@ -1,7 +1,11 @@
 export type TBanner = {
   title: string;
   description: string;
-  image: string;
+  link: string;
+  image: TImage;
+  createdAt: Date;
+  updatedAt: Date;
+  _id: string
 };
 
 export type Store = {

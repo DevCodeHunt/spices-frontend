@@ -7,6 +7,7 @@ import { Heart, Menu, Search, ShoppingBasket, X } from "lucide-react";
 import Searchbar from "./searchbar";
 import useDebounce from "@/hooks/useDebounce";
 import NavMenu from "./nav-menu";
+import Link from "next/link";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -65,6 +66,11 @@ const Navbar = () => {
             </button>
           </div>
           <div className="flex items-center gap-4">
+            <div className="md:flex items-center gap-2 hidden">
+              <Link href="/signin" className="hover:text-primary transition duration-300">Login</Link>
+              <span>/</span>
+              <Link href="/signup" className="hover:text-primary transition duration-300">Register</Link>
+            </div>
             <button onClick={hangeOpenSerach} className="md:hidden block">
               <Search />
             </button>
