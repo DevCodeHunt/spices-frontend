@@ -1,25 +1,23 @@
 import Image from "next/image";
 import React from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { useToast } from "@/components/ui/use-toast";
 import { SquarePen, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import { axiosPrivate } from "@/lib/axios";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import {
+  addImages,
+  deleteImages,
+  ProductState,
+  replaceImages,
+} from "@/redux/slices/productSlice";
 import { TImage } from "@/types";
 
-type Props = {
-  images: File[];
-  setImages: React.Dispatch<React.SetStateAction<File[]>>;
-  setUploadImages: React.Dispatch<React.SetStateAction<TImage[]>>;
-};
-const UploadProductImage: React.FC<Props> = ({
-  images,
-  setImages,
-  setUploadImages,
-}) => {
-  const { toast } = useToast();
-
+const UploadProductImage = () => {
+  const { images } = useAppSelector(ProductState);
+  const dispatch = useAppDispatch();
   const onDrop = React.useCallback(
-    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+    async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       const acceptedFilesTypes = ["svg", "png", "jpg", "jpeg"];
 
       acceptedFiles.filter((file: File) => {
@@ -27,41 +25,95 @@ const UploadProductImage: React.FC<Props> = ({
         const filename = file.name.split(".")[0];
 
         if (!acceptedFilesTypes.includes(fileExtension.toLowerCase())) {
-          toast({
-            variant: "destructive",
-            title: `File ${filename} is not a valid extension`,
-            description:
-              "Please select a valid extension for the file type like svg, png, jpg and jpeg and try again.",
-          });
+          toast.error(
+            "Please select a valid extension for the file type like svg, png, jpg and jpeg and try again."
+          );
           return;
         }
-
-        setImages((prevImages) => [...acceptedFiles, ...prevImages]);
       });
+      const loading = toast.loading("Uploading...");
+      try {
+        const formData = new FormData();
+        acceptedFiles.forEach((image) => {
+          formData.append("images", image);
+        });
+        const response = await axiosPrivate.post(
+          "/admin/products/upload-product-image",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        toast.success("Product image uploaded successfully");
+        dispatch(addImages(response.data));
+      } catch (error: any) {
+        toast.error(error.response?.data?.message);
+      } finally {
+        toast.dismiss(loading);
+      }
       const rejectedFiles = fileRejections.map(
         (fileRejection) => fileRejection.file
       );
     },
-    [setImages, toast]
+    [dispatch]
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const handleReplaceImage = (
+  const handleReplaceImage = async (
     event: React.ChangeEvent<HTMLInputElement>,
+    id: string,
     index: number
   ) => {
     const file = event.target.files![0];
     if (file) {
-      setImages((prevImages) => {
-        const newImages = [...prevImages];
-        newImages[index] = file;
-        return newImages;
-      });
+      const loading = toast.loading("Replacing...");
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("imageId", id);
+        const response = await axiosPrivate.post(
+          "/admin/products/replace-product-image",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        toast.success("Product image replaced successfully");
+        dispatch(
+          replaceImages({
+            index: index,
+            image: response.data,
+          })
+        );
+      } catch (error: any) {
+        toast.error(error.response?.data?.message);
+      } finally {
+        toast.dismiss(loading);
+      }
     }
   };
 
-  const handleUpload = () => {
-    console.log(images);
+  const handleDeleteImage = async (index: number, id: string) => {
+    const loading = toast.loading("Deleting...");
+    try {
+      await axiosPrivate.post("/admin/products/delete-product-image", {
+        imageId: id,
+      });
+      toast.success("Product image deleted successfully");
+      dispatch(
+        deleteImages({
+          index: index,
+        })
+      );
+    } catch (error: any) {
+      toast.error(error.response?.data?.message);
+    } finally {
+      toast.dismiss(loading);
+    }
   };
 
   return (
@@ -91,8 +143,8 @@ const UploadProductImage: React.FC<Props> = ({
               />
             </svg>
             <p className="mb-2 text-sm text-gray-500 text-center">
-              <span className="font-semibold text-center">Click to upload</span> or drag and
-              drop
+              <span className="font-semibold text-center">Click to upload</span>{" "}
+              or drag and drop
             </p>
             <p className="text-xs text-gray-500">SVG, PNG, JPG or JPEG</p>
           </div>
@@ -110,10 +162,10 @@ const UploadProductImage: React.FC<Props> = ({
       {images && images?.length > 0 && (
         <>
           <div className="flex flex-wrap gap-2 mt-4">
-            {images.map((obj, i) => (
+            {images.map((obj: TImage, i) => (
               <div key={i} className="relative rounded w-[150px] h-[150px]">
                 <Image
-                  src={URL.createObjectURL(obj)}
+                  src={obj.url}
                   alt="image"
                   width={150}
                   height={150}
@@ -127,15 +179,18 @@ const UploadProductImage: React.FC<Props> = ({
                       type="file"
                       hidden
                       accept=".png, .jpg, .jpeg, .svg"
-                      onChange={(event) => handleReplaceImage(event, i)}
+                      onChange={(event) =>
+                        handleReplaceImage(event, obj?.id, i)
+                      }
                     />
                   </label>
                   <button
-                    onClick={() => {
-                      setImages((prevImages) =>
-                        prevImages.filter((image, index) => index !== i)
-                      );
-                    }}
+                    onClick={() => handleDeleteImage(i, obj?.id)}
+                    // onClick={() => {
+                    //   setImages((prevImages) =>
+                    //     prevImages.filter((image, index) => index !== i)
+                    //   );
+                    // }}
                   >
                     <Trash2 size={24} />
                   </button>
@@ -143,11 +198,7 @@ const UploadProductImage: React.FC<Props> = ({
               </div>
             ))}
           </div>
-          <div className="mt-6 flex justify-end">
-            <Button onClick={handleUpload} type="button">
-              Upload
-            </Button>
-          </div>
+          
         </>
       )}
     </div>

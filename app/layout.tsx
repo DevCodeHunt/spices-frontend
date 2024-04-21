@@ -6,6 +6,9 @@ import "slick-carousel/slick/slick-theme.css";
 import { Toaster as SoonerToaster } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import QueryProvider from "@/providers/QueryProvider";
+import ReduxProvider from "@/providers/ReduxProvider";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <QueryProvider>{children}</QueryProvider>
+        <ReduxProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </ReduxProvider>
         <SoonerToaster />
         <Toaster />
+        <ToastContainer position="bottom-center" />
       </body>
     </html>
   );

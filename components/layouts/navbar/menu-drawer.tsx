@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/constants";
+import useAuthMutation from "@/hooks/useAuthMutation";
+import { useAppSelector } from "@/redux/hooks";
+import { UserState } from "@/redux/slices/userSlice";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,7 +17,8 @@ const MenuDrawer = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-
+  const { isAuth } = useAppSelector(UserState);
+  const { logoutMutation } = useAuthMutation();
   const handleClose = useCallback(() => {
     setTimeout(() => setOpen(false), 200);
   }, [setOpen]);
@@ -42,25 +46,36 @@ const MenuDrawer = ({
         </div>
 
         <div className="flex items-center gap-2 px-4 mt-8">
-          <Button
-            onClick={() => {
-              router.push("/signin");
-              handleClose();
-            }}
-            className="w-full"
-          >
-            Login
-          </Button>
-          <Button
-            onClick={() => {
-              router.push("/signup");
-              handleClose();
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            Register
-          </Button>
+          {isAuth ? (
+            <Button onClick={() => {
+              logoutMutation.mutate()
+              handleClose()
+            }} className="w-full">
+              Log out
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  router.push("/signin");
+                  handleClose();
+                }}
+                className="w-full"
+              >
+                Login
+              </Button>
+              <Button
+                onClick={() => {
+                  router.push("/signup");
+                  handleClose();
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Register
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

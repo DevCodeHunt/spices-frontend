@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import UploadProductImage from "./upload-image";
-import { TImage } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,12 +18,31 @@ import { Input } from "@/components/ui/input";
 import EditorJS, { OutputData } from "@editorjs/editorjs";
 import { tools } from "@/components/editor/editor-tool";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { calculateDiscountPercentage } from "@/lib/helper";
+import { useAppSelector } from "@/redux/hooks";
+import { ProductState } from "@/redux/slices/productSlice";
+import useProductMutation from "@/hooks/useProductMutation";
 
 const AddProductForm = () => {
-  const [images, setImages] = useState<File[]>([]);
-  const [uploadImages, setUploadImages] = useState<TImage[]>([]);
   const [editorContent, setEditorContent] = useState<any[]>([]);
-
+  const { images } = useAppSelector(ProductState);
+  const { addProductMutation } = useProductMutation();
   const form = useForm<z.infer<typeof addProductFormSchema>>({
     resolver: zodResolver(addProductFormSchema),
     defaultValues: {
@@ -32,12 +50,59 @@ const AddProductForm = () => {
       price: "",
       stock: "",
       discountPrice: "",
+      category: "",
+      discountApplied: "",
+      discountType: "",
+      barCode: "",
+      sku: "",
+      discountDate: {
+        from: undefined,
+        to: undefined,
+      },
+      shippingPrice: "",
     },
   });
 
   const editorRef = useRef<EditorJS | null>(null);
   const onSubmit = async (values: z.infer<typeof addProductFormSchema>) => {
-    console.log(editorContent);
+    const {
+      name,
+      price,
+      stock,
+      discountPrice,
+      discountType,
+      discountApplied,
+      discountDate,
+      category,
+      barCode,
+      shippingPrice,
+      sku,
+    } = values;
+    const data = {
+      name,
+      stock: Number(stock),
+      category,
+      images,
+      description: editorContent,
+      price: Number(price),
+      discountPrice: Number(discountPrice),
+      discountType: Number(discountType),
+      discountStartDate: discountDate?.from
+        ? format(discountDate.from, "yyyy-MM-dd")
+        : null,
+      discountEndDate: discountDate?.to
+        ? format(discountDate.to, "yyyy-MM-dd")
+        : null,
+      discountApplied: discountApplied === "true" ? true : false,
+      barCode,
+      shippingPrice: Number(shippingPrice),
+      sku,
+      discountPercentage: calculateDiscountPercentage(
+        Number(price),
+        Number(discountPrice)
+      ),
+    };
+    addProductMutation.mutate(data);
   };
 
   useEffect(() => {
@@ -72,38 +137,64 @@ const AddProductForm = () => {
   return (
     <div className="mt-10">
       <div className="flex items-center justify-end">
-        <Button onClick={form.handleSubmit(onSubmit)}>Add Product</Button>
+        <Button
+          disabled={addProductMutation.isPending}
+          onClick={form.handleSubmit(onSubmit)}
+        >
+          Add Product
+        </Button>
       </div>
-      <div className="flex lg:flex-row flex-col gap-4 mt-6">
-        <div className="bg-white shadow rounded p-4 lg:w-[450px] w-full">
-          <UploadProductImage
-            images={images}
-            setImages={setImages}
-            setUploadImages={setUploadImages}
-          />
+      <div className="grid xl:grid-cols-3 grid-cols-1 gap-4 mt-6 w-full">
+        <div className="bg-white shadow rounded p-4  w-full">
+          <UploadProductImage />
         </div>
 
-        <div className="flex-1 shadow p-4 rounded bg-white">
+        <div className="col-span-2 shadow p-4 rounded bg-white">
           <h3 className="text-lg font-semibold text-gray-800">
             General Information
           </h3>
 
           <Form {...form}>
-            <form className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
+            <form className="space-y-4 mt-6">
+              <div className="grid  2xl:grid-cols-3 md:grid-cols-2  grid-cols-1 gap-x-4 gap-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product Category</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="true">True</SelectItem>
+                          <SelectItem value="false">False</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="price"
@@ -136,15 +227,142 @@ const AddProductForm = () => {
                     </FormItem>
                   )}
                 />
-              </div>
+                <FormField
+                  control={form.control}
+                  name="discountType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Discount Type{" "}
+                        <span className="opacity-80 ml-1 font-normal">
+                          (optional)
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="discountDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>
+                        Discount Date{" "}
+                        <span className="opacity-80 ml-1 font-normal">
+                          (optional)
+                        </span>
+                      </FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 border-gray-500 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value &&
+                              field.value.from &&
+                              field.value.to ? (
+                                <>
+                                  {format(field.value.from, "LLL dd, yyyy")} -{" "}
+                                  {format(field.value.to, "LLL dd, yyyy")}
+                                </>
+                              ) : (
+                                <span>Pick a date range</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 " />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="range"
+                            selected={field.value}
+                            onSelect={(dateRange) => field.onChange(dateRange)}
+                            initialFocus
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="discountApplied"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Discount Applied</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="true">True</SelectItem>
+                          <SelectItem value="false">False</SelectItem>
+                        </SelectContent>
+                      </Select>
 
-              <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="stock"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Stock</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="barCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bar Code</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sku"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>SKU</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="shippingPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Shipping Price</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>

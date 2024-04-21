@@ -3,11 +3,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Logo from "../Logo";
 import MenuDrawer from "./menu-drawer";
-import { Heart, Menu, Search, ShoppingBasket, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBasket, Shuffle, X } from "lucide-react";
 import Searchbar from "./searchbar";
 import useDebounce from "@/hooks/useDebounce";
 import NavMenu from "./nav-menu";
 import Link from "next/link";
+import useProfile from "@/hooks/queries/useProfile";
+import UserMenu from "./user-menu";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -15,6 +18,9 @@ const Navbar = () => {
   const [openSerach, setOpenSerach] = useState(false);
   const [navBg, setNavBg] = useState(false);
   const debounceSerach = useDebounce(searchTerm);
+  const {user} = useProfile()
+  const router = useRouter()
+  
 
   const handleDrawerOpen = useCallback(() => setOpen((prev) => !prev), []);
   const onSerachChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,24 +72,26 @@ const Navbar = () => {
             </button>
           </div>
           <div className="flex items-center gap-4">
-            <div className="md:flex items-center gap-2 hidden">
-              <Link href="/signin" className="hover:text-primary transition duration-300">Login</Link>
-              <span>/</span>
-              <Link href="/signup" className="hover:text-primary transition duration-300">Register</Link>
-            </div>
             <button onClick={hangeOpenSerach} className="md:hidden block">
               <Search />
             </button>
-            <button className="relative">
+            <UserMenu />
+            <button onClick={() => router.push("/compares")} className="relative md:block hidden">
+              <Shuffle />
+              <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
+                0
+              </span>
+            </button>
+            <button onClick={() => router.push("/wishlists")} className="relative">
               <Heart />
               <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
                 0
               </span>
             </button>
 
-            <button className="relative">
-              <ShoppingBasket size={24} />
-              <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
+            <button onClick={() => router.push("/cart")} className="relative">
+              <ShoppingBasket size={26} />
+              <span className="absolute -top-[2px] -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
                 0
               </span>
             </button>
