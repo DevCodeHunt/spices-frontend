@@ -35,7 +35,7 @@ export const LoginFormSchema = z
     signedIn: z.boolean(),
   });
 
-  export const SendVerficationFormSchema = z
+export const SendVerficationFormSchema = z
   .object({
     email: z.string().min(1, { message: "Email is required" }).email().trim(),
   })
@@ -74,3 +74,7 @@ export const editBannerFormSchema = z.object({
   description: z.string().min(1, { message: "Banner description is required" }).trim(),
   link: z.string().trim(),
 })
+
+export const addCategoryFormSchema = z.object({
+  name: z.string().min(1, { message: "Category name is required" }).trim(),
+});

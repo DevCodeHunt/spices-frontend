@@ -19,7 +19,7 @@ import { UserState } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import useProfile from "@/hooks/queries/useProfile";
 import { Button } from "@/components/ui/button";
-import useAuthMutation from "@/hooks/useAuthMutation";
+import useAuthMutation from "@/hooks/mutations/useAuthMutation";
 
 const UserMenu = () => {
   const { isAuth } = useAppSelector(UserState);

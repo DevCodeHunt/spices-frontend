@@ -28,6 +28,9 @@ const productSlice = createSlice({
         },
         addImages: (state, action) => {
             state.images = [...state.images, ...action.payload];
+        },
+        clearImages: (state) => {
+            state.images = [];
         }
     },
 });
@@ -38,7 +41,8 @@ export const {
     setImages,
     replaceImages,
     deleteImages,
-    addImages
+    addImages,
+    clearImages
 } = productSlice.actions;
 
 export default productSlice.reducer;

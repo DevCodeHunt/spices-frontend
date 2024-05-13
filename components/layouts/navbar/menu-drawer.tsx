@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/constants";
-import useAuthMutation from "@/hooks/useAuthMutation";
+import useAuthMutation from "@/hooks/mutations/useAuthMutation";
 import { useAppSelector } from "@/redux/hooks";
 import { UserState } from "@/redux/slices/userSlice";
 import { X } from "lucide-react";

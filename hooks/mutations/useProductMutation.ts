@@ -1,23 +1,26 @@
-import { useToast } from '@/components/ui/use-toast'
+import { axiosPrivate } from '@/lib/axios';
+import { useAppDispatch } from '@/redux/hooks';
+import { setImages } from '@/redux/slices/productSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import React from 'react'
+import { toast } from 'react-toastify';
 
-const useProductQuery = () => {
+const useProductMutation = () => {
     const queryClient = useQueryClient()
-    const { toast } = useToast();
+    const dispatch = useAppDispatch()
 
-    const createProductMutation = useMutation({
-        mutationFn: async (values: FormData) => {
-            return values
+
+    const addProductMutation = useMutation({
+        mutationKey: ["admin", { action: "addProduct" }],
+        mutationFn: async (values: any) => {
+            const response = await axiosPrivate.post("/admin/products", values);
+            return response.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["products"] });
+            toast.success("Product added successfully");
         },
         onError(error: any) {
-            toast({
-                description: error?.response?.data?.message,
-                variant: "destructive",
-            });
+            toast.error(error?.response?.data?.message);
         },
     });
 
@@ -29,10 +32,7 @@ const useProductQuery = () => {
             queryClient.invalidateQueries({ queryKey: ["products"] });
         },
         onError(error: any) {
-            toast({
-                description: error?.response?.data?.message,
-                variant: "destructive",
-            });
+            toast.error(error?.response?.data?.message);
         },
     });
 
@@ -44,19 +44,16 @@ const useProductQuery = () => {
             queryClient.invalidateQueries({ queryKey: ["products"] });
         },
         onError(error: any) {
-            toast({
-                description: error?.response?.data?.message,
-                variant: "destructive",
-            });
+            toast.error(error?.response?.data?.message);
         },
     });
 
 
     return {
-        createProductMutation,
+        addProductMutation,
         updateProductMutation,
-        deleteProductMutation
+        deleteProductMutation,
     }
 }
 
-export default useProductQuery
+export default useProductMutation

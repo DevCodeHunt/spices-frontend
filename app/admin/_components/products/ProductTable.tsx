@@ -167,7 +167,7 @@ const ProductTable = () => {
   return (
     <div className="bg-white border-b border-r border-l shadow rounded-lg mt-8">
       <div className="flex flex-col flex-wrap px-4 py-3 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4 border-b border-b-gray-300">
-        <div className="flex items-center flex-1 space-x-4">
+        <div className="flex items-center flex-1 flex-wrap gap-4">
           <h5>
             <span className="text-gray-500">All Products:</span>
             <span className="dark:text-white">123456</span>

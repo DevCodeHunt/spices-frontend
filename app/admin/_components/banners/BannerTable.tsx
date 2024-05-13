@@ -17,7 +17,7 @@ import useEditBannerStore from "@/store/editBanner-store";
 import useDeleteBannerStore from "@/store/deleteBanner-store";
 import EditBannerModal from "./EditBannerModal";
 import DeleteBannerModal from "./DeleteBannerModal";
-import useBanners from "@/hooks/useBanners";
+import useBanners from "@/hooks/queries/useBanners";
 import { TBanner } from "@/types";
 import dayjs from "dayjs";
 import Image from "next/image";

@@ -1,6 +1,6 @@
 "use client";
 
-import useBanners from "@/hooks/useBanners";
+import useBanners from "@/hooks/queries/useBanners";
 import { TBanner } from "@/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React from "react";

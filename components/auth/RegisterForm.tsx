@@ -19,7 +19,7 @@ import { RegisterFormSchema } from "@/schemas";
 import { KeyRound, Mail, TriangleAlert, UserRound } from "lucide-react";
 import Link from "next/link";
 import FormError from "../layouts/FormError";
-import useAuthMutation from "@/hooks/useAuthMutation";
+import useAuthMutation from "@/hooks/mutations/useAuthMutation";
 import { CustomError } from "@/types";
 import { useRouter } from "next/navigation";
 

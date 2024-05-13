@@ -35,11 +35,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { calculateDiscountPercentage } from "@/lib/helper";
-import { useAppSelector } from "@/redux/hooks";
-import { ProductState } from "@/redux/slices/productSlice";
-import useProductMutation from "@/hooks/useProductMutation";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { clearImages, ProductState } from "@/redux/slices/productSlice";
+import useProductMutation from "@/hooks/mutations/useProductMutation";
 
 const AddProductForm = () => {
+  const dispatch = useAppDispatch()
   const [editorContent, setEditorContent] = useState<any[]>([]);
   const { images } = useAppSelector(ProductState);
   const { addProductMutation } = useProductMutation();
@@ -95,7 +96,7 @@ const AddProductForm = () => {
         : null,
       discountApplied: discountApplied === "true" ? true : false,
       barCode,
-      shippingPrice: Number(shippingPrice),
+      shippingPrice: shippingPrice ? Number(shippingPrice) : 0,
       sku,
       discountPercentage: calculateDiscountPercentage(
         Number(price),
@@ -103,6 +104,9 @@ const AddProductForm = () => {
       ),
     };
     addProductMutation.mutate(data);
+    form.reset();
+    dispatch(clearImages())
+    setEditorContent([])
   };
 
   useEffect(() => {
