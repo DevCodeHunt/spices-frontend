@@ -59,3 +59,11 @@ export type TAddress = {
   longitude: number;
   isActive: boolean;
 }
+
+export interface Category {
+  _id: string;
+  name: string;
+  image: TImage;
+  createdAt: Date;
+  updatedAt: Date;
+}

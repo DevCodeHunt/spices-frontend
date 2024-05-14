@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { Pagination } from "@mui/material";
+import useCategories from "@/hooks/queries/useCategories";
+import { Category } from "@/types";
 
 const columns: ColumnDef<unknown, any>[] = [
   {
@@ -125,6 +127,7 @@ const columns: ColumnDef<unknown, any>[] = [
 
 const ProductTable = () => {
   const router = useRouter();
+  const { categories } = useCategories();
   const table = useReactTable({
     data: [],
     columns,
@@ -214,9 +217,12 @@ const ProductTable = () => {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">Light</SelectItem>
-              <SelectItem value="dark">Dark</SelectItem>
-              <SelectItem value="system">System</SelectItem>
+              {categories &&
+                categories.map((category: Category, index: number) => (
+                  <SelectItem key={index} value={category.name}>
+                    {category.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
           <Select onValueChange={(val) => handlePriceChange(val)} value={price}>
@@ -224,9 +230,13 @@ const ProductTable = () => {
               <SelectValue placeholder="Price" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">Light</SelectItem>
-              <SelectItem value="dark">Dark</SelectItem>
-              <SelectItem value="system">System</SelectItem>
+              {["All", "₹1-50", "₹50-100", "₹100-150", "₹150+"].map(
+                (price: string, index: number) => (
+                  <SelectItem key={index} value={price}>
+                    {price}
+                  </SelectItem>
+                )
+              )}
             </SelectContent>
           </Select>
           <Select

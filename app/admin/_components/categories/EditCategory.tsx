@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { addCategoryFormSchema } from "@/schemas";
-import useAddCategoryStore from "@/store/addCategoryStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -24,17 +23,18 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import { axiosPrivate } from "@/lib/axios";
 import useCategoryMutation from "@/hooks/mutations/useCategoryMutation";
-import { TImage } from "@/types";
+import { Category, TImage } from "@/types";
 import Image from "next/image";
+import { useEditCategorytore } from "@/store/modalStore";
 
-const AddCategoryModal = () => {
-  const addCategoryStore = useAddCategoryStore();
-  const { addCategoryMutation } = useCategoryMutation();
+const EditCategory = ({ category }: { category: Category }) => {
+  const editCategory = useEditCategorytore();
+  const { updateCategoryMutation } = useCategoryMutation();
   const [image, setImage] = useState<TImage | null>(null);
   const form = useForm<z.infer<typeof addCategoryFormSchema>>({
     resolver: zodResolver(addCategoryFormSchema),
     defaultValues: {
-      name: "",
+      name: category?.name,
     },
   });
 
@@ -55,6 +55,7 @@ const AddCategoryModal = () => {
       try {
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("imageId", category.image.id);
         const response = await axiosPrivate.post(
           "/categories/upload-image",
           formData,
@@ -76,31 +77,28 @@ const AddCategoryModal = () => {
         (fileRejection) => fileRejection.file
       );
     },
-    []
+    [category.image]
   );
 
   const onSubmit = async (values: z.infer<typeof addCategoryFormSchema>) => {
     const data = {
       name: values.name,
       image: image,
+      id: category._id,
     };
-    addCategoryMutation.mutate(data);
-    addCategoryStore.onClose();
+    updateCategoryMutation.mutate(data);
+    editCategory.onClose();
   };
 
   useEffect(() => {
-    if (!addCategoryStore.open) {
-      setImage(null);
-      form.reset();
+    if (category) {
+      setImage(category.image);
     }
-  }, [addCategoryStore.open, form]);
+  }, [category]);
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
   return (
-    <Dialog
-      open={addCategoryStore.open}
-      onOpenChange={addCategoryStore.onClose}
-    >
+    <Dialog open={editCategory.open} onOpenChange={editCategory.onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add New Category</DialogTitle>
@@ -128,10 +126,20 @@ const AddCategoryModal = () => {
                   {...getRootProps()}
                   onClick={(e: any) => e.stopPropagation()}
                   htmlFor="image"
-                  className={`flex flex-col items-center justify-center w-full h-48 ${!image ? "border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100" :""}`}
+                  className={`flex flex-col items-center justify-center w-full h-48 ${
+                    !image
+                      ? "border-2 border-gray-400 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                      : ""
+                  }`}
                 >
                   {image ? (
-                    <Image src={image?.url} alt="category-image" width={400} height={400} className="w-full h-full rounded-lg object-cover" />
+                    <Image
+                      src={image?.url}
+                      alt="category-image"
+                      width={400}
+                      height={400}
+                      className="w-full h-full rounded-lg object-cover"
+                    />
                   ) : (
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <svg
@@ -185,4 +193,4 @@ const AddCategoryModal = () => {
   );
 };
 
-export default AddCategoryModal;
+export default EditCategory;

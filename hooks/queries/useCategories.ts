@@ -3,16 +3,16 @@ import { useQuery } from "@tanstack/react-query"
 
 
 const useCategories = () => {
-    const { data: banners, isSuccess, isError, errorUpdateCount, isLoading } = useQuery({
+    const { data: categories, isSuccess, isError, errorUpdateCount, isLoading } = useQuery({
         queryKey: ['categories'],
         queryFn: async () => {
-            const { data} = await axiosInstance.get("/categories")
+            const { data } = await axiosInstance.get("/categories")
             return data
         },
     })
 
     return {
-        banners,
+        categories,
         isSuccess,
         isError,
         errorUpdateCount,

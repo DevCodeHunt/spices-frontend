@@ -38,9 +38,12 @@ import { calculateDiscountPercentage } from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearImages, ProductState } from "@/redux/slices/productSlice";
 import useProductMutation from "@/hooks/mutations/useProductMutation";
+import useCategories from "@/hooks/queries/useCategories";
+import { Category } from "@/types";
 
 const AddProductForm = () => {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
+  const { categories } = useCategories();
   const [editorContent, setEditorContent] = useState<any[]>([]);
   const { images } = useAppSelector(ProductState);
   const { addProductMutation } = useProductMutation();
@@ -105,8 +108,8 @@ const AddProductForm = () => {
     };
     addProductMutation.mutate(data);
     form.reset();
-    dispatch(clearImages())
-    setEditorContent([])
+    dispatch(clearImages());
+    setEditorContent([]);
   };
 
   useEffect(() => {
@@ -190,8 +193,14 @@ const AddProductForm = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="true">True</SelectItem>
-                          <SelectItem value="false">False</SelectItem>
+                          {categories &&
+                            categories.map(
+                              (category: Category, index: number) => (
+                                <SelectItem key={index} value={category.name}>
+                                  {category.name}
+                                </SelectItem>
+                              )
+                            )}
                         </SelectContent>
                       </Select>
 
