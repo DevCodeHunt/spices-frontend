@@ -43,7 +43,8 @@ export interface IUser {
   likesBlogs: [any],
   addresses: [any],
   createdAt: Date,
-  updatedAt: Date
+  updatedAt: Date,
+  profileImg: TImage
 }
 
 

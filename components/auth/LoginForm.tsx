@@ -25,8 +25,8 @@ import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const router = useRouter();
-  const { signIntMutation } = useAuthMutation();
-  
+  const { signIntMutation, sendVerificationMailMutation } = useAuthMutation();
+
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -42,18 +42,24 @@ const LoginForm = () => {
     formData.append("email", values.email);
     formData.append("password", values.password);
     signIntMutation.mutate(formData);
- 
   };
 
   const handleShowPassword = (val: boolean) => {
     setShowPassword(val);
   };
 
+  const resendMail = () => {
+    const email = form.getValues("email");
+    const formData = new FormData();
+    formData.append("email", email);
+    sendVerificationMailMutation.mutate(formData);
+  };
+
   return (
     <div className="max-w-lg w-full mx-auto mb-4">
       {signIntMutation.isError &&
       (signIntMutation.error as CustomError)?.response?.data.message ===
-        "Email is already registered but not verified" ? (
+        "Email is not verified." ? (
         <div className="border-2 border-red-400 p-4 rounded-lg flex items-start gap-2 mb-4">
           <TriangleAlert className="text-red-400" size={32} />
           <div className="flex-1">
@@ -67,7 +73,8 @@ const LoginForm = () => {
           <Button
             type="button"
             variant="destructive"
-            onClick={() => router.push("/send-verification-mail")}
+            disabled={sendVerificationMailMutation.isPending}
+            onClick={resendMail}
           >
             Verify
           </Button>
@@ -82,7 +89,7 @@ const LoginForm = () => {
           />
         )
       )}
-      
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -113,28 +120,36 @@ const LoginForm = () => {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative w-full">
-                    <KeyRound className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-600" />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="****************"
-                      {...field}
-                      className="pl-9"
-                    />
-                  </div>
-                </FormControl>
+          <div className="w-full">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <div className="relative w-full">
+                      <KeyRound className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-600" />
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="****************"
+                        {...field}
+                        className="pl-9"
+                      />
+                    </div>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Link
+              href="/forgot-password"
+              className="float-right mt-1 hover:underline hover:text-primary"
+            >
+              Forgot Password
+            </Link>
+          </div>
 
           <div className="flex items-center space-x-2">
             <Checkbox

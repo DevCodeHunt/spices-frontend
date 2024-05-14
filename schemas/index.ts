@@ -40,6 +40,31 @@ export const SendVerficationFormSchema = z
     email: z.string().min(1, { message: "Email is required" }).email().trim(),
   })
 
+export const ForgotPasswordFormSchema = z
+  .object({
+    email: z.string().min(1, { message: "Email is required" }).email().trim(),
+  })
+
+export const ResetPasswordFormSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(1, { message: "New password is required" })
+      .regex(passwordRegex, {
+        message:
+          "Password must be at least eight characters, at least one letter, one number and one special character",
+      }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Conform password is required" })
+      .trim(),
+  
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords does not match",
+  });
+
 
 export const addProductFormSchema = z.object({
   name: z.string().min(1, { message: "Product name is required" }).trim(),
@@ -78,3 +103,6 @@ export const editBannerFormSchema = z.object({
 export const addCategoryFormSchema = z.object({
   name: z.string().min(1, { message: "Category name is required" }).trim(),
 });
+
+
+

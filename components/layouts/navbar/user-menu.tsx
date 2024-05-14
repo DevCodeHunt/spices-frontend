@@ -20,12 +20,13 @@ import { useRouter } from "next/navigation";
 import useProfile from "@/hooks/queries/useProfile";
 import { Button } from "@/components/ui/button";
 import useAuthMutation from "@/hooks/mutations/useAuthMutation";
+import Image from "next/image";
 
 const UserMenu = () => {
   const { isAuth } = useAppSelector(UserState);
   const { user } = useProfile();
   const router = useRouter();
-  const { logoutMutation} = useAuthMutation()
+  const { logoutMutation } = useAuthMutation();
 
   return (
     <DropdownMenu>
@@ -37,10 +38,22 @@ const UserMenu = () => {
         <DropdownMenuSeparator />
         {isAuth ? (
           <div className="space-y-2">
-            <DropdownMenuItem className="flex flex-col">
+            <DropdownMenuLabel className="flex flex-col font-normal">
               <div>
                 <div className="flex items-start gap-2 mb-3">
-                  <div className="border w-10 h-10 rounded-full border-gray-400"></div>
+                  {user?.profileImg ? (
+                    <Image
+                      src={user?.profileImg.url}
+                      alt={user?.name}
+                      width={40}
+                      height={40}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="border w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold">
+                      {user?.name.slice(0, 1)}
+                    </div>
+                  )}
                   <div className="flex-1">
                     <span className="break-all">{user?.name}</span>
                     <span>@{user?.username}</span>
@@ -48,7 +61,7 @@ const UserMenu = () => {
                 </div>
                 <span className="break-all">{user?.email}</span>
               </div>
-            </DropdownMenuItem>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => router.push("/profile")}
@@ -79,7 +92,10 @@ const UserMenu = () => {
               <span className="text-base">Orders</span>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Button onClick={() => logoutMutation.mutate()} className="w-full">
+              <Button
+                onClick={() => logoutMutation.mutate()}
+                className="w-full"
+              >
                 Log out
               </Button>
             </DropdownMenuItem>

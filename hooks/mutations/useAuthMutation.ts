@@ -19,6 +19,15 @@ const useAuthMutation = () => {
         },
     });
 
+    const verificationMailMutation = useMutation({
+        mutationKey: ["auth", { action: "verificationMail" }],
+        mutationFn: async (token: string) => {
+            const response = await axiosInstance.post("/auth/verify", {token});
+            return response.data;
+        },
+        
+    });
+
     const sendVerificationMailMutation = useMutation({
         mutationKey: ["auth", { action: "sendVerificationMail" }],
         mutationFn: async (values: FormData) => {
@@ -62,11 +71,31 @@ const useAuthMutation = () => {
         }
     });
 
+    const forgotPasswordMutation = useMutation({
+        mutationKey: ["auth", { action: "forgotPassword" }],
+        mutationFn: async (values: FormData) => {
+            const response = await axiosInstance.post("/auth/forgot-password", values);
+            return response.data;
+        },
+    });
+
+    const resetPasswordMutation = useMutation({
+        mutationKey: ["auth", { action: "resetPassword" }],
+        mutationFn: async (values: FormData) => {
+            const response = await axiosInstance.patch("/auth/reset-password", values);
+            return response.data;
+        },
+    });
+
+
     return {
         signUptMutation,
         signIntMutation,
         sendVerificationMailMutation,
-        logoutMutation
+        logoutMutation,
+        forgotPasswordMutation,
+        resetPasswordMutation,
+        verificationMailMutation
     }
 }
 

@@ -24,7 +24,7 @@ import { CustomError } from "@/types";
 import { useRouter } from "next/navigation";
 
 const RegisterForm = () => {
-  const { signUptMutation } = useAuthMutation();
+  const { signUptMutation, sendVerificationMailMutation } = useAuthMutation();
   const router = useRouter();
   const form = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
@@ -55,6 +55,13 @@ const RegisterForm = () => {
     setShowPassword(val);
   };
 
+  const resendMail = () => {
+    const email = form.getValues("email")
+    const formData = new FormData();
+    formData.append("email", email);
+    sendVerificationMailMutation.mutate(formData);
+  };
+
   return (
     <div className="max-w-lg w-full mx-auto mb-4">
       {signUptMutation.isError &&
@@ -73,7 +80,8 @@ const RegisterForm = () => {
           <Button
             type="button"
             variant="destructive"
-            onClick={() => router.push("/send-verification-mail")}
+            disabled={sendVerificationMailMutation.isPending}
+            onClick={resendMail}
           >
             Verify
           </Button>
