@@ -80,7 +80,7 @@ const Banner = () => {
           <div key={index} className="md:h-[70vh] h-[50vh]">
             <div
               style={{
-                backgroundImage: `url(${banner?.image.url})`,
+                backgroundImage: `url(${banner?.image?.url})`,
               }}
               className="h-full w-full bg-cover bg-no-repeat bg-center"
             >

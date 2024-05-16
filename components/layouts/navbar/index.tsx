@@ -18,9 +18,8 @@ const Navbar = () => {
   const [openSerach, setOpenSerach] = useState(false);
   const [navBg, setNavBg] = useState(false);
   const debounceSerach = useDebounce(searchTerm);
-  const {user} = useProfile()
-  const router = useRouter()
-  
+  const { user } = useProfile();
+  const router = useRouter();
 
   const handleDrawerOpen = useCallback(() => setOpen((prev) => !prev), []);
   const onSerachChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,16 +75,22 @@ const Navbar = () => {
               <Search />
             </button>
             <UserMenu />
-            <button onClick={() => router.push("/compares")} className="relative md:block hidden">
+            <button
+              onClick={() => router.push("/compares")}
+              className="relative md:block hidden"
+            >
               <Shuffle />
               <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
                 0
               </span>
             </button>
-            <button onClick={() => router.push("/wishlists")} className="relative">
+            <button
+              onClick={() => router.push("/wishlists")}
+              className="relative"
+            >
               <Heart />
               <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
-                0
+                {user?.wishlists.length}
               </span>
             </button>
 

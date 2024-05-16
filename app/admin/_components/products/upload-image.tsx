@@ -169,6 +169,7 @@ const UploadProductImage = () => {
                   alt="image"
                   width={150}
                   height={150}
+                  priority={true}
                   className="rounded object-cover w-full h-full"
                 />
                 <div className="absolute inset-0 bg-black/10 text-white rounded flex items-center justify-center gap-2">

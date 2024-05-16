@@ -9,6 +9,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import ReduxProvider from "@/providers/ReduxProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ToastPrivider from "@/providers/ToastPrivider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,11 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ReduxProvider>
-          <QueryProvider>{children}</QueryProvider>
-        </ReduxProvider>
-        <SoonerToaster />
-        <Toaster />
+        <ToastPrivider>
+          <ReduxProvider>
+            <QueryProvider>{children}</QueryProvider>
+          </ReduxProvider>
+          <SoonerToaster />
+          <Toaster />
+        </ToastPrivider>
         <ToastContainer position="bottom-center" />
       </body>
     </html>

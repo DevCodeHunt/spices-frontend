@@ -19,7 +19,21 @@ export const useViewCategorytore = create<Store>((set) => ({
     onOpen: () => set({ open: true }),
 }));
 
+
 export const useDeleteAllCategorytore = create<Store>((set) => ({
+    open: false,
+    onClose: () => set({ open: false }),
+    onOpen: () => set({ open: true }),
+}));
+
+
+export const useDeleteProducttore = create<Store>((set) => ({
+    open: false,
+    onClose: () => set({ open: false }),
+    onOpen: () => set({ open: true }),
+}));
+
+export const useDeleteAllProducttore = create<Store>((set) => ({
     open: false,
     onClose: () => set({ open: false }),
     onOpen: () => set({ open: true }),

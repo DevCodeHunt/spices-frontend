@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import EditorJS, { OutputData } from "@editorjs/editorjs";
+import EditorJS from "@editorjs/editorjs";
 import { tools } from "@/components/editor/editor-tool";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -34,12 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { calculateDiscountPercentage } from "@/lib/helper";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearImages, ProductState } from "@/redux/slices/productSlice";
 import useProductMutation from "@/hooks/mutations/useProductMutation";
 import useCategories from "@/hooks/queries/useCategories";
 import { Category } from "@/types";
+import { DateRange } from "react-day-picker";
 
 const AddProductForm = () => {
   const dispatch = useAppDispatch();
@@ -101,10 +101,6 @@ const AddProductForm = () => {
       barCode,
       shippingPrice: shippingPrice ? Number(shippingPrice) : 0,
       sku,
-      discountPercentage: calculateDiscountPercentage(
-        Number(price),
-        Number(discountPrice)
-      ),
     };
     addProductMutation.mutate(data);
     form.reset();
@@ -228,13 +224,13 @@ const AddProductForm = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Discount Price{" "}
+                        Discount Price (%){" "}
                         <span className="opacity-80 ml-1 font-normal">
                           (optional)
                         </span>
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="14, 25, 30, etc." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -296,7 +292,7 @@ const AddProductForm = () => {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="range"
-                            selected={field.value}
+                            selected={field.value as DateRange}
                             onSelect={(dateRange) => field.onChange(dateRange)}
                             initialFocus
                             numberOfMonths={2}

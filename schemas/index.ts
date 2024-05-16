@@ -58,7 +58,7 @@ export const ResetPasswordFormSchema = z
       .string()
       .min(1, { message: "Conform password is required" })
       .trim(),
-  
+
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     path: ["confirmPassword"],
@@ -67,6 +67,28 @@ export const ResetPasswordFormSchema = z
 
 
 export const addProductFormSchema = z.object({
+  name: z.string().min(1, { message: "Product name is required" }).trim(),
+  price: z.string().min(1, { message: "Product price is required" }).trim(),
+  category: z
+    .string()
+    .min(1, { message: "Product category is required" })
+    .trim(),
+  discountPrice: z.string().trim(),
+  discountType: z.string().optional(),
+  discountDate: z
+    .object({
+      from: z.date().optional(),
+      to: z.date().optional(),
+    })
+    .optional(),
+  discountApplied: z.string().optional(),
+  shippingPrice: z.string().trim(),
+  barCode: z.string().trim(),
+  sku: z.string().trim(),
+  stock: z.string().min(1, { message: "Product stock is required" }).trim(),
+});
+
+export const editProductFormSchema = z.object({
   name: z.string().min(1, { message: "Product name is required" }).trim(),
   price: z.string().min(1, { message: "Product price is required" }).trim(),
   category: z
@@ -102,6 +124,12 @@ export const editBannerFormSchema = z.object({
 
 export const addCategoryFormSchema = z.object({
   name: z.string().min(1, { message: "Category name is required" }).trim(),
+});
+
+
+export const reviewFormSchema = z.object({
+  message: z.string().min(1, { message: "Message is required" }).trim(),
+  rating: z.number(),
 });
 
 

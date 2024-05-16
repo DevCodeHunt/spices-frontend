@@ -67,3 +67,58 @@ export interface Category {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface AdminProduct {
+  _id: string;
+  name: string;
+  image: string;
+  stock: number;
+  price: number;
+  salesPerDay: number;
+  salesPerMonth: number;
+  totalSales: number;
+  createdAt: Date;
+  updatedAt: Date;
+  revenue: number;
+  purchased: number;
+  rating: {
+    count: number;
+    average: number;
+  },
+  purchasedAt: Date;
+  category: string
+}
+
+export type Review = {
+  _id: string;
+  rating: number;
+  message: string;
+  customer: Object;
+}
+
+export interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  description: [any];
+  category: boolean;
+  images: TImage[];
+  discountPrice: number;
+  discountType: string;
+  discountStartDate: Date;
+  discountEndDate: Date;
+  discountApplied: boolean;
+  stock: number;
+  shippingPrice: number;
+  barCode: number;
+  sku: number;
+  purchased: number;
+  visited: number;
+  reviews: Review[];
+  createdAt: Date;
+  updatedAt: Date;
+  rating: {
+    count: number;
+    average: number;
+  };
+}
