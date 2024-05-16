@@ -4,12 +4,14 @@ import { useAppDispatch } from '@/redux/hooks';
 import { logOut, setCredentials } from '@/redux/slices/userSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useSnackbar } from 'notistack';
 import { toast } from 'react-toastify';
 
 const useAuthMutation = () => {
     const queryClient = useQueryClient()
     const router = useRouter();
     const dispatch = useAppDispatch();
+    const { enqueueSnackbar } = useSnackbar();
 
     const signUptMutation = useMutation({
         mutationKey: ["auth", { action: "signup" }],
@@ -45,12 +47,11 @@ const useAuthMutation = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            dispatch(setCredentials({
-                token: data.access_token,
-                user: data.user
-            }));
-            storeInLocalStorage("spicesRefreshToken", data.access_token);
+            dispatch(setCredentials(data));
+            queryClient.invalidateQueries({ queryKey: ["user"] });
+            storeInLocalStorage("spicesAccessToken", data.access_token);
             router.push("/")
+            enqueueSnackbar("Logged in successfully", { variant: "success" });
         },
     });
 
@@ -61,13 +62,14 @@ const useAuthMutation = () => {
             return response.data;
         },
         onSuccess: () => {
-            removeFromLocalStorage("spicesRefreshToken");
+            queryClient.invalidateQueries({ queryKey: ["user"] });
+            removeFromLocalStorage("spicesAccessToken");
             dispatch(logOut())
             router.push("/")
-            toast.success("Logged out successfully")
+            enqueueSnackbar("Logged out successfully", { variant: "success" });
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data.message)
+            enqueueSnackbar(error?.response?.data.message, { variant: "success" });
         }
     });
 

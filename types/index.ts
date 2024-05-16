@@ -122,3 +122,9 @@ export interface Product {
     average: number;
   };
 }
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+  _id: string
+}

@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Logo from "../Logo";
 import MenuDrawer from "./menu-drawer";
 import { Heart, Menu, Search, ShoppingBasket, Shuffle, X } from "lucide-react";
 import Searchbar from "./searchbar";
 import useDebounce from "@/hooks/useDebounce";
 import NavMenu from "./nav-menu";
-import Link from "next/link";
-import useProfile from "@/hooks/queries/useProfile";
 import UserMenu from "./user-menu";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/hooks";
+import { UserState } from "@/redux/slices/userSlice";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -18,7 +18,7 @@ const Navbar = () => {
   const [openSerach, setOpenSerach] = useState(false);
   const [navBg, setNavBg] = useState(false);
   const debounceSerach = useDebounce(searchTerm);
-  const { user } = useProfile();
+  const { user } = useAppSelector(UserState);
   const router = useRouter();
 
   const handleDrawerOpen = useCallback(() => setOpen((prev) => !prev), []);
@@ -90,14 +90,14 @@ const Navbar = () => {
             >
               <Heart />
               <span className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
-                {user?.wishlists.length}
+                {user?.wishlists.length || 0}
               </span>
             </button>
 
             <button onClick={() => router.push("/cart")} className="relative">
               <ShoppingBasket size={26} />
               <span className="absolute -top-[2px] -right-2 w-4 h-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-medium">
-                0
+                {user?.carts.length || 0}
               </span>
             </button>
             <button onClick={handleDrawerOpen} className="md:hidden block">

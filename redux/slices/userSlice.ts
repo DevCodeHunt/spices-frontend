@@ -12,8 +12,8 @@ export interface IUserState {
 }
 
 const initialState: IUserState = {
-    isAuth: lookInInLocalStorage("spicesRefreshToken") ? true : false,
-    token: lookInInLocalStorage("spicesRefreshToken"),
+    isAuth: lookInInLocalStorage("spicesAccessToken") ? true : false,
+    token: lookInInLocalStorage("spicesAccessToken"),
     user: null,
     addresses: [],
 };

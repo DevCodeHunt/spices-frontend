@@ -17,14 +17,12 @@ import {
 import { useAppSelector } from "@/redux/hooks";
 import { UserState } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
-import useProfile from "@/hooks/queries/useProfile";
 import { Button } from "@/components/ui/button";
 import useAuthMutation from "@/hooks/mutations/useAuthMutation";
 import Image from "next/image";
 
 const UserMenu = () => {
-  const { isAuth } = useAppSelector(UserState);
-  const { user } = useProfile();
+  const { isAuth, user } = useAppSelector(UserState);
   const router = useRouter();
   const { logoutMutation } = useAuthMutation();
 
