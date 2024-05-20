@@ -132,5 +132,31 @@ export const reviewFormSchema = z.object({
   rating: z.number(),
 });
 
+export const personalInformationFormSchema = z.object({
+  name: z.string().min(1, { message: "Message is required" }).trim(),
+  email: z.string().min(1, { message: "Email is required" }).email().trim(),
+  mobile: z.string().min(1, { message: "Phone number is required" }).trim(),
+});
+
+export const addAddressFormSchema = z.object({
+  address: z.string().min(1, { message: "Address is required" }).trim(),
+  city: z.string().min(1, { message: "City is required" }).trim(),
+  state: z.string().min(1, { message: "State is required" }).trim(),
+  zip: z.string().min(1, { message: "Zip code is required" }).trim(),
+  country: z.string().min(1, { message: "Country is required" }).trim(),
+});
+
+export const paymentFormSchema = z.object({
+  address: z.string().min(1, { message: "Address is required" }).trim(),
+  city: z.string().min(1, { message: "City is required" }).trim(),
+  state: z.string().min(1, { message: "State is required" }).trim(),
+  zip: z.string().min(1, { message: "Zip code is required" }).trim(),
+  country: z.string().min(1, { message: "Country is required" }).trim(),
+  email: z.string().min(1, { message: "Email is required" }).email().trim(),
+  phone: z.string().min(1, { message: "Required" }).regex(/^\+?[0-9]+$/, { message: "Phone number must be a valid number" }).trim(),
+});
+
+
+
 
 

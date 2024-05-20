@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { IUser, TAddress } from "@/types";
+import { CheckoutInfo, IUser, TAddress } from "@/types";
 import { lookInInLocalStorage } from "@/lib/localstorage";
 
 
@@ -9,6 +9,7 @@ export interface IUserState {
     token: string | null;
     user: IUser | null;
     addresses: TAddress[];
+    checkoutInfo: CheckoutInfo | null
 }
 
 const initialState: IUserState = {
@@ -16,6 +17,7 @@ const initialState: IUserState = {
     token: lookInInLocalStorage("spicesAccessToken"),
     user: null,
     addresses: [],
+    checkoutInfo: null
 };
 
 const userSlice = createSlice({
@@ -72,6 +74,9 @@ const userSlice = createSlice({
             state.token = null;
             state.isAuth = false
         },
+        setCheckoutInfo: (state, action: PayloadAction<CheckoutInfo>) => {
+            state.checkoutInfo = { ...state.checkoutInfo, ...action.payload };
+        },
     },
 });
 
@@ -86,6 +91,7 @@ export const {
     setDeleteAddress,
     setSaveAddress,
     setToggleActiveAddress,
+    setCheckoutInfo
 } = userSlice.actions;
 
 export default userSlice.reducer;

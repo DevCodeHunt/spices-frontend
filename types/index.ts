@@ -128,3 +128,16 @@ export interface CartItem {
   quantity: number;
   _id: string
 }
+
+export interface CheckoutInfo {
+  name: string;
+  email: string;
+  mobile: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  paymentMethod: string;
+
+}
